@@ -30,8 +30,8 @@ def create_driver() -> WebDriver:
     elif platform == "ios":
         options = XCUITestOptions()
 
-        aux_prebuild_wda_val = os.getenv("USE_PREBUILT_WDA", "false").lower()
-        options.use_prebuilt_wda = aux_prebuild_wda_val == "true"
+        aux_prebuilt_wda_val = os.getenv("USE_PREBUILT_WDA", "false").lower()
+        options.use_prebuilt_wda = aux_prebuilt_wda_val == "true"
 
         options.platform_name = "iOS"
         options.xcode_signing_id = "Apple Development"
