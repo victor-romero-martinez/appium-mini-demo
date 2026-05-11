@@ -19,7 +19,7 @@ def disconnected_wdr(request):
     yield
 
     if context.driver:
-        platform = context.driver.capabilities.get("platformName").lower()
+        platform = context.platform
         if platform != "ios":
             return
 
