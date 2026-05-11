@@ -8,5 +8,12 @@ class Context:
     """
     driver: WebDriver | None = None
 
+    @property
+    def platform(self) -> str:
+        """Retorna la plataforma actual en minúsculas (ej: 'android' o 'ios')."""
+        if self.driver and self.driver.capabilities:
+            return self.driver.capabilities.get("platformName", "").lower()
+        return ""
+
 
 context = Context()
