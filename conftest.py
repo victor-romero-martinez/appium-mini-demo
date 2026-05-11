@@ -1,7 +1,7 @@
 import pytest, subprocess
 
 from core.context import context
-from core.dirver_factory import create_driver
+from core.driver_factory import create_driver
 
 
 @pytest.fixture(scope="session", autouse=True)
