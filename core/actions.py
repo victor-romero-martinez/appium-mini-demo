@@ -64,7 +64,7 @@ def scroll_to(locator: tuple[str, str]) -> None:
     Ejemplo:
         scroll_to((AppiumBy.ACCESSIBILITY_ID, "footer_element"))
     """
-    platform = context.driver.capabilities.get("platformName", "").lower()
+    platform = context.platform
     strategy, value = locator
 
     if platform == "android":
