@@ -187,3 +187,12 @@ def swipe(
         actions.w3c_actions.pointer_action.move_to_location(end_x, end_y)
         actions.w3c_actions.pointer_action.pointer_up()
         actions.perform()
+
+
+def back() -> None:
+    """
+    Navega hacia atrás en la aplicación.
+    En Android equivale al botón físico/sistema 'Atrás'.
+    En iOS intenta volver a la vista anterior si la navegación lo permite.
+    """
+    context.driver.back()
