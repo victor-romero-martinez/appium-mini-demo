@@ -1,37 +1,35 @@
 from core.waits import wait_visible
 
 
-def assert_visible(locator: tuple[str, str]) -> None:
+def assert_visible(locator: tuple[str, str], description: str = None) -> None:
     """
-    Verifica que un elemento sea visible en la pantalla.
-    Lanza una AssertionError si el elemento no aparece dentro del tiempo de espera.
-
-    Ejemplo:
-        assert_visible((AppiumBy.ID, "welcome_message"))
+    Verifica que un elemento sea visible.
     """
+    msg = description or f"Verificando visibilidad de: {locator}"
     element = wait_visible(locator)
     assert element.is_displayed()
+    print(f"[✓] {msg}")
 
 
-def assert_enabled(locator: tuple[str, str]) -> None:
+def assert_enabled(locator: tuple[str, str], description: str = None) -> None:
     """
-    Verifica que un elemento esté habilitado (enabled).
-    Ejemplo:
-        assert_enabled((AppiumBy.ID, "welcome_message"))
+    Verifica que un elemento esté habilitado.
     """
+    msg = description or f"Verificando que esté habilitado: {locator}"
     element = wait_visible(locator)
     assert (
         element.is_enabled()
     ), f"Error: El elemento {locator} debería estar habilitado pero está deshabilitado."
+    print(f"[✓] {msg}")
 
 
-def assert_disabled(locator: tuple[str, str]) -> None:
+def assert_disabled(locator: tuple[str, str], description: str = None) -> None:
     """
-    Verifica que un elemento esté deshabilitado (disabled).
-    Ejemplo:
-        assert_disabled((AppiumBy.ID, "welcome_message"))
+    Verifica que un elemento esté deshabilitado.
     """
+    msg = description or f"Verificando que esté deshabilitado: {locator}"
     element = wait_visible(locator)
     assert (
         not element.is_enabled()
     ), f"Error: El elemento {locator} debería estar deshabilitado pero está habilitado."
+    print(f"[✓] {msg}")

@@ -5,26 +5,22 @@ from core.context import context
 from core.waits import wait_visible
 
 
-def tap_on(locator: tuple[str, str]) -> None:
+def tap_on(locator: tuple[str, str], description: str = None) -> None:
     """
-    Realiza un toque (tap) sobre un elemento identificado por el locador.
-    Espera a que el elemento sea visible antes de interactuar.
-
-    Ejemplo:
-        tap_on((AppiumBy.ID, "com.example:id/login_button"))
+    Realiza un toque (tap) sobre un elemento.
     """
+    msg = description or f"Tocando en el elemento: {locator}"
+    print(f"[✓] {msg}")
     element = wait_visible(locator)
     element.click()
 
 
-def tap_at(x: int, y: int) -> None:
+def tap_at(x: int, y: int, description: str = None) -> None:
     """
-    Realiza un toque (tap) en coordenadas específicas (x, y) de la pantalla.
-    Usa el protocolo W3C Actions para mayor precisión.
-
-    Ejemplo:
-        tap_at(500, 1000)
+    Realiza un toque (tap) en coordenadas específicas (x, y).
     """
+    msg = description or f"Tocando en coordenadas: ({x}, {y})"
+    print(f"[✓] {msg}")
     actions = ActionChains(context.driver)
     actions.w3c_actions.pointer_action.move_to_location(x, y)
     actions.w3c_actions.pointer_action.pointer_down()
@@ -32,15 +28,12 @@ def tap_at(x: int, y: int) -> None:
     actions.perform()
 
 
-def input_text(locator: tuple[str, str], text: str) -> None:
+def input_text(locator: tuple[str, str], text: str, description: str = None) -> None:
     """
     Escribe texto en un campo de entrada.
-    Espera a que el campo sea visible, hace clic para ganar foco y envía el texto.
-    Intenta ocultar el teclado automáticamente al finalizar.
-
-    Ejemplo:
-        input_text((AppiumBy.ACCESSIBILITY_ID, "user_field"), "mi_usuario")
     """
+    msg = description or f"Escribiendo '{text}' en: {locator}"
+    print(f"[✓] {msg}")
     element = wait_visible(locator)
     element.click()
     actions = ActionChains(context.driver)
@@ -51,46 +44,41 @@ def input_text(locator: tuple[str, str], text: str) -> None:
         try:
             context.driver.hide_keyboard()
         except Exception:
-            # En iOS el ocultar teclado puede fallar dependiendo del estado del teclado
             pass
 
 
-def get_text(locator: tuple[str, str]) -> str:
+def get_text(locator: tuple[str, str], description: str = None) -> str:
     """
     Obtiene el texto de un elemento.
-    Espera a que el elemento sea visible antes de interactuar.
-
-    Ejemplo:
-        get_text((AppiumBy.ID, "com.example:id/login_button"))
     """
+    msg = description or f"Obteniendo texto de: {locator}"
+    print(f"[✓] {msg}")
     element = wait_visible(locator)
     return (
         element.text or element.get_attribute("text") or element.get_attribute("label")
     )
 
 
-def take_screenshot(filename: str, path: str = "reportes/screenshots") -> None:
+def take_screenshot(
+    filename: str, path: str = "reportes/screenshots", description: str = None
+) -> None:
     """
-    Toma una captura de pantalla y la guarda en el directorio especificado.
-
-    Ejemplo:
-        take_screenshot("home_page.png")
+    Toma una captura de pantalla.
     """
+    msg = description or f"Guardando captura de pantalla: {filename}"
+    print(f"[✓] {msg}")
     import os
 
     os.makedirs(path, exist_ok=True)
     context.driver.save_screenshot(f"{path}/{filename}")
 
 
-def scroll_until_visibliity(locator: tuple[str, str]) -> None:
+def scroll_until_visibliity(locator: tuple[str, str], description: str = None) -> None:
     """
-    Realiza un scroll hasta que el elemento indicado sea visible.
-    En Android usa UiScrollable (nativo y rápido).
-    En iOS usa el script 'mobile: scroll' (nativo).
-
-    Ejemplo:
-        scroll_until_visibliity((AppiumBy.ACCESSIBILITY_ID, "footer_element"))
+    Realiza un scroll hasta que el elemento sea visible.
     """
+    msg = description or f"Haciendo scroll hasta encontrar: {locator}"
+    print(f"[✓] {msg}")
     platform = context.platform
     strategy, value = locator
 
@@ -122,16 +110,13 @@ def swipe(
     count: int = 1,
     locator: tuple[str, str] = None,
     container_locator: tuple[str, str] = None,
+    description: str = None,
 ) -> None:
     """
-    Realiza un deslizamiento (swipe) en la dirección especificada.
-
-    Args:
-        direction: 'up', 'down', 'left', 'right'.
-        count: Cantidad máxima de swipes a realizar.
-        locator: Opcional. Tupla (By, Value) para detener el swipe al encontrar el elemento.
-        container_locator: Opcional. Tupla (By, Value) del elemento contenedor donde se hará el swipe.
+    Realiza un deslizamiento (swipe).
     """
+    msg = description or f"Haciendo swipe hacia {direction}"
+    print(f"[✓] {msg}")
     # 1. Determinar el área de acción
     if container_locator:
         container = wait_visible(container_locator)
@@ -189,10 +174,10 @@ def swipe(
         actions.perform()
 
 
-def back() -> None:
+def back(description: str = None) -> None:
     """
-    Navega hacia atrás en la aplicación.
-    En Android equivale al botón físico/sistema 'Atrás'.
-    En iOS intenta volver a la vista anterior si la navegación lo permite.
+    Vuelve atrás.
     """
+    msg = description or "Navegando hacia atrás"
+    print(f"[✓] {msg}")
     context.driver.back()
