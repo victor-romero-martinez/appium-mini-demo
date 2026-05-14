@@ -55,6 +55,33 @@ def input_text(locator: tuple[str, str], text: str) -> None:
             pass
 
 
+def get_text(locator: tuple[str, str]) -> str:
+    """
+    Obtiene el texto de un elemento.
+    Espera a que el elemento sea visible antes de interactuar.
+
+    Ejemplo:
+        get_text((AppiumBy.ID, "com.example:id/login_button"))
+    """
+    element = wait_visible(locator)
+    return (
+        element.text or element.get_attribute("text") or element.get_attribute("label")
+    )
+
+
+def take_screenshot(filename: str, path: str = "reportes/screenshots") -> None:
+    """
+    Toma una captura de pantalla y la guarda en el directorio especificado.
+
+    Ejemplo:
+        take_screenshot("home_page.png")
+    """
+    import os
+
+    os.makedirs(path, exist_ok=True)
+    context.driver.save_screenshot(f"{path}/{filename}")
+
+
 def scroll_until_visibliity(locator: tuple[str, str]) -> None:
     """
     Realiza un scroll hasta que el elemento indicado sea visible.
@@ -88,3 +115,75 @@ def scroll_until_visibliity(locator: tuple[str, str]) -> None:
         context.driver.execute_script(
             "mobile: scroll", {"elementId": element.id, "toVisible": True}
         )
+
+
+def swipe(
+    direction: str,
+    count: int = 1,
+    locator: tuple[str, str] = None,
+    container_locator: tuple[str, str] = None,
+) -> None:
+    """
+    Realiza un deslizamiento (swipe) en la dirección especificada.
+
+    Args:
+        direction: 'up', 'down', 'left', 'right'.
+        count: Cantidad máxima de swipes a realizar.
+        locator: Opcional. Tupla (By, Value) para detener el swipe al encontrar el elemento.
+        container_locator: Opcional. Tupla (By, Value) del elemento contenedor donde se hará el swipe.
+    """
+    # 1. Determinar el área de acción
+    if container_locator:
+        container = wait_visible(container_locator)
+        rect = container.rect
+        ax, ay, aw, ah = rect["x"], rect["y"], rect["width"], rect["height"]
+    else:
+        size = context.driver.get_window_size()
+        ax, ay, aw, ah = 0, 0, size["width"], size["height"]
+
+    # 2. Calcular coordenadas relativas al área (inicio y fin)
+    coords = {
+        "up": {
+            "start": (ax + aw * 0.5, ay + ah * 0.8),
+            "end": (ax + aw * 0.5, ay + ah * 0.2),
+        },
+        "down": {
+            "start": (ax + aw * 0.5, ay + ah * 0.2),
+            "end": (ax + aw * 0.5, ay + ah * 0.8),
+        },
+        "left": {
+            "start": (ax + aw * 0.8, ay + ah * 0.5),
+            "end": (ax + aw * 0.2, ay + ah * 0.5),
+        },
+        "right": {
+            "start": (ax + aw * 0.2, ay + ah * 0.5),
+            "end": (ax + aw * 0.8, ay + ah * 0.5),
+        },
+    }
+
+    if direction not in coords:
+        raise ValueError(
+            f"Dirección inválida: {direction}. Use 'up', 'down', 'left' o 'right'."
+        )
+
+    start_x, start_y = coords[direction]["start"]
+    end_x, end_y = coords[direction]["end"]
+
+    for _ in range(count):
+        # Verificar si el elemento objetivo ya es visible para detenerse
+        if locator:
+            try:
+                elements = context.driver.find_elements(*locator)
+                if elements and elements[0].is_displayed():
+                    return
+            except:
+                pass
+
+        # Ejecutar Swipe usando W3C Actions
+        actions = ActionChains(context.driver)
+        actions.w3c_actions.pointer_action.move_to_location(start_x, start_y)
+        actions.w3c_actions.pointer_action.pointer_down()
+        actions.w3c_actions.pointer_action.pause(0.6)  # Pausa para asegurar el swipe
+        actions.w3c_actions.pointer_action.move_to_location(end_x, end_y)
+        actions.w3c_actions.pointer_action.pointer_up()
+        actions.perform()
