@@ -1,4 +1,4 @@
-from core.waits import wait_is_visible
+from core.waits import wait_visible
 
 
 def assert_visible(locator: tuple[str, str]) -> None:
@@ -9,5 +9,5 @@ def assert_visible(locator: tuple[str, str]) -> None:
     Ejemplo:
         assert_visible((AppiumBy.ID, "welcome_message"))
     """
-    element = wait_is_visible(locator)
+    element = wait_visible(locator)
     assert element.is_displayed()

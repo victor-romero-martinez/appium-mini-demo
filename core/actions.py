@@ -2,7 +2,7 @@ import re
 from selenium.webdriver.common.action_chains import ActionChains
 from appium.webdriver.common.appiumby import AppiumBy
 from core.context import context
-from core.waits import wait_is_visible
+from core.waits import wait_visible
 
 
 def tap_on(locator: tuple[str, str]) -> None:
@@ -13,7 +13,7 @@ def tap_on(locator: tuple[str, str]) -> None:
     Ejemplo:
         tap_on((AppiumBy.ID, "com.example:id/login_button"))
     """
-    element = wait_is_visible(locator)
+    element = wait_visible(locator)
     element.click()
 
 
@@ -41,7 +41,7 @@ def input_text(locator: tuple[str, str], text: str) -> None:
     Ejemplo:
         input_text((AppiumBy.ACCESSIBILITY_ID, "user_field"), "mi_usuario")
     """
-    element = wait_is_visible(locator)
+    element = wait_visible(locator)
     element.click()
     actions = ActionChains(context.driver)
     actions.send_keys(text)
