@@ -55,14 +55,14 @@ def input_text(locator: tuple[str, str], text: str) -> None:
             pass
 
 
-def scroll_to(locator: tuple[str, str]) -> None:
+def scroll_until_visibliity(locator: tuple[str, str]) -> None:
     """
     Realiza un scroll hasta que el elemento indicado sea visible.
     En Android usa UiScrollable (nativo y rápido).
     En iOS usa el script 'mobile: scroll' (nativo).
 
     Ejemplo:
-        scroll_to((AppiumBy.ACCESSIBILITY_ID, "footer_element"))
+        scroll_until_visibliity((AppiumBy.ACCESSIBILITY_ID, "footer_element"))
     """
     platform = context.platform
     strategy, value = locator
