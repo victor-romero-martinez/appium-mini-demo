@@ -14,6 +14,11 @@ def setup_driver():
         context.driver.quit()
 
 
+@pytest.fixture(scope="session")
+def current_platform():
+    return context.platform
+
+
 @pytest.fixture(scope="session", autouse=True)
 def disconnected_wdr(request):
     yield

@@ -10,9 +10,9 @@ def tap_on(locator: tuple[str, str], description: str = None) -> None:
     Realiza un toque (tap) sobre un elemento.
     """
     msg = description or f"Tocando en el elemento: {locator}"
-    print(f"[✓] {msg}")
     element = wait_visible(locator)
     element.click()
+    print(f"[✓] {msg}")
 
 
 def tap_at(x: int, y: int, description: str = None) -> None:
@@ -20,12 +20,12 @@ def tap_at(x: int, y: int, description: str = None) -> None:
     Realiza un toque (tap) en coordenadas específicas (x, y).
     """
     msg = description or f"Tocando en coordenadas: ({x}, {y})"
-    print(f"[✓] {msg}")
     actions = ActionChains(context.driver)
     actions.w3c_actions.pointer_action.move_to_location(x, y)
     actions.w3c_actions.pointer_action.pointer_down()
     actions.w3c_actions.pointer_action.pointer_up()
     actions.perform()
+    print(f"[✓] {msg}")
 
 
 def input_text(locator: tuple[str, str], text: str, description: str = None) -> None:
@@ -33,12 +33,12 @@ def input_text(locator: tuple[str, str], text: str, description: str = None) -> 
     Escribe texto en un campo de entrada.
     """
     msg = description or f"Escribiendo '{text}' en: {locator}"
-    print(f"[✓] {msg}")
     element = wait_visible(locator)
     element.click()
     actions = ActionChains(context.driver)
     actions.send_keys(text)
     actions.perform()
+    print(f"[✓] {msg}")
 
     if context.driver.is_keyboard_shown():
         try:
@@ -52,8 +52,8 @@ def get_text(locator: tuple[str, str], description: str = None) -> str:
     Obtiene el texto de un elemento.
     """
     msg = description or f"Obteniendo texto de: {locator}"
-    print(f"[✓] {msg}")
     element = wait_visible(locator)
+    print(f"[✓] {msg}")
     return (
         element.text or element.get_attribute("text") or element.get_attribute("label")
     )
@@ -65,12 +65,12 @@ def take_screenshot(
     """
     Toma una captura de pantalla.
     """
-    msg = description or f"Guardando captura de pantalla: {filename}"
-    print(f"[✓] {msg}")
     import os
 
+    msg = description or f"Guardando captura de pantalla: {filename}"
     os.makedirs(path, exist_ok=True)
     context.driver.save_screenshot(f"{path}/{filename}")
+    print(f"[✓] {msg}")
 
 
 def scroll_until_visibliity(locator: tuple[str, str], description: str = None) -> None:
@@ -78,9 +78,9 @@ def scroll_until_visibliity(locator: tuple[str, str], description: str = None) -
     Realiza un scroll hasta que el elemento sea visible.
     """
     msg = description or f"Haciendo scroll hasta encontrar: {locator}"
-    print(f"[✓] {msg}")
     platform = context.platform
     strategy, value = locator
+    print(f"[✓] {msg}")
 
     if platform == "android":
         selector = None
@@ -179,5 +179,5 @@ def back(description: str = None) -> None:
     Vuelve atrás.
     """
     msg = description or "Navegando hacia atrás"
-    print(f"[✓] {msg}")
     context.driver.back()
+    print(f"[✓] {msg}")
