@@ -2,70 +2,85 @@ import re
 from selenium.webdriver.common.action_chains import ActionChains
 from appium.webdriver.common.appiumby import AppiumBy
 from core.context import context
-from core.waits import wait_is_visible
+from core.waits import wait_visible
 
 
-def tap_on(locator: tuple[str, str]) -> None:
+def tap_on(locator: tuple[str, str], description: str = None) -> None:
     """
-    Realiza un toque (tap) sobre un elemento identificado por el locador.
-    Espera a que el elemento sea visible antes de interactuar.
-
-    Ejemplo:
-        tap_on((AppiumBy.ID, "com.example:id/login_button"))
+    Realiza un toque (tap) sobre un elemento.
     """
-    element = wait_is_visible(locator)
+    msg = description or f"Tocando en el elemento: {locator}"
+    element = wait_visible(locator)
     element.click()
+    print(f"[✓] {msg}")
 
 
-def tap_at(x: int, y: int) -> None:
+def tap_at(x: int, y: int, description: str = None) -> None:
     """
-    Realiza un toque (tap) en coordenadas específicas (x, y) de la pantalla.
-    Usa el protocolo W3C Actions para mayor precisión.
-
-    Ejemplo:
-        tap_at(500, 1000)
+    Realiza un toque (tap) en coordenadas específicas (x, y).
     """
+    msg = description or f"Tocando en coordenadas: ({x}, {y})"
     actions = ActionChains(context.driver)
     actions.w3c_actions.pointer_action.move_to_location(x, y)
     actions.w3c_actions.pointer_action.pointer_down()
     actions.w3c_actions.pointer_action.pointer_up()
     actions.perform()
+    print(f"[✓] {msg}")
 
 
-def input_text(locator: tuple[str, str], text: str) -> None:
+def input_text(locator: tuple[str, str], text: str, description: str = None) -> None:
     """
     Escribe texto en un campo de entrada.
-    Espera a que el campo sea visible, hace clic para ganar foco y envía el texto.
-    Intenta ocultar el teclado automáticamente al finalizar.
-
-    Ejemplo:
-        input_text((AppiumBy.ACCESSIBILITY_ID, "user_field"), "mi_usuario")
     """
-    element = wait_is_visible(locator)
+    msg = description or f"Escribiendo '{text}' en: {locator}"
+    element = wait_visible(locator)
     element.click()
     actions = ActionChains(context.driver)
     actions.send_keys(text)
     actions.perform()
+    print(f"[✓] {msg}")
 
     if context.driver.is_keyboard_shown():
         try:
             context.driver.hide_keyboard()
         except Exception:
-            # En iOS el ocultar teclado puede fallar dependiendo del estado del teclado
             pass
 
 
-def scroll_to(locator: tuple[str, str]) -> None:
+def get_text(locator: tuple[str, str], description: str = None) -> str:
     """
-    Realiza un scroll hasta que el elemento indicado sea visible.
-    En Android usa UiScrollable (nativo y rápido).
-    En iOS usa el script 'mobile: scroll' (nativo).
+    Obtiene el texto de un elemento.
+    """
+    msg = description or f"Obteniendo texto de: {locator}"
+    element = wait_visible(locator)
+    print(f"[✓] {msg}")
+    return (
+        element.text or element.get_attribute("text") or element.get_attribute("label")
+    )
 
-    Ejemplo:
-        scroll_to((AppiumBy.ACCESSIBILITY_ID, "footer_element"))
+
+def take_screenshot(
+    filename: str, path: str = "reportes/screenshots", description: str = None
+) -> None:
     """
+    Toma una captura de pantalla.
+    """
+    import os
+
+    msg = description or f"Guardando captura de pantalla: {filename}"
+    os.makedirs(path, exist_ok=True)
+    context.driver.save_screenshot(f"{path}/{filename}")
+    print(f"[✓] {msg}")
+
+
+def scroll_until_visibliity(locator: tuple[str, str], description: str = None) -> None:
+    """
+    Realiza un scroll hasta que el elemento sea visible.
+    """
+    msg = description or f"Haciendo scroll hasta encontrar: {locator}"
     platform = context.platform
     strategy, value = locator
+    print(f"[✓] {msg}")
 
     if platform == "android":
         selector = None
@@ -88,3 +103,81 @@ def scroll_to(locator: tuple[str, str]) -> None:
         context.driver.execute_script(
             "mobile: scroll", {"elementId": element.id, "toVisible": True}
         )
+
+
+def swipe(
+    direction: str,
+    count: int = 1,
+    locator: tuple[str, str] = None,
+    container_locator: tuple[str, str] = None,
+    description: str = None,
+) -> None:
+    """
+    Realiza un deslizamiento (swipe).
+    """
+    msg = description or f"Haciendo swipe hacia {direction}"
+    print(f"[✓] {msg}")
+    # 1. Determinar el área de acción
+    if container_locator:
+        container = wait_visible(container_locator)
+        rect = container.rect
+        ax, ay, aw, ah = rect["x"], rect["y"], rect["width"], rect["height"]
+    else:
+        size = context.driver.get_window_size()
+        ax, ay, aw, ah = 0, 0, size["width"], size["height"]
+
+    # 2. Calcular coordenadas relativas al área (inicio y fin)
+    coords = {
+        "up": {
+            "start": (ax + aw * 0.5, ay + ah * 0.8),
+            "end": (ax + aw * 0.5, ay + ah * 0.2),
+        },
+        "down": {
+            "start": (ax + aw * 0.5, ay + ah * 0.2),
+            "end": (ax + aw * 0.5, ay + ah * 0.8),
+        },
+        "left": {
+            "start": (ax + aw * 0.8, ay + ah * 0.5),
+            "end": (ax + aw * 0.2, ay + ah * 0.5),
+        },
+        "right": {
+            "start": (ax + aw * 0.2, ay + ah * 0.5),
+            "end": (ax + aw * 0.8, ay + ah * 0.5),
+        },
+    }
+
+    if direction not in coords:
+        raise ValueError(
+            f"Dirección inválida: {direction}. Use 'up', 'down', 'left' o 'right'."
+        )
+
+    start_x, start_y = coords[direction]["start"]
+    end_x, end_y = coords[direction]["end"]
+
+    for _ in range(count):
+        # Verificar si el elemento objetivo ya es visible para detenerse
+        if locator:
+            try:
+                elements = context.driver.find_elements(*locator)
+                if elements and elements[0].is_displayed():
+                    return
+            except:
+                pass
+
+        # Ejecutar Swipe usando W3C Actions
+        actions = ActionChains(context.driver)
+        actions.w3c_actions.pointer_action.move_to_location(start_x, start_y)
+        actions.w3c_actions.pointer_action.pointer_down()
+        actions.w3c_actions.pointer_action.pause(0.6)  # Pausa para asegurar el swipe
+        actions.w3c_actions.pointer_action.move_to_location(end_x, end_y)
+        actions.w3c_actions.pointer_action.pointer_up()
+        actions.perform()
+
+
+def back(description: str = None) -> None:
+    """
+    Vuelve atrás.
+    """
+    msg = description or "Navegando hacia atrás"
+    context.driver.back()
+    print(f"[✓] {msg}")

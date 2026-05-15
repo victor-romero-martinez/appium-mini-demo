@@ -1,7 +1,7 @@
 from typing import Callable, Any
 
 
-def on_flow(when: bool, flow: Callable[..., Any], *args, **kwargs) -> Any:
+def run_flow(when: bool, flow: Callable[..., Any], *args, **kwargs) -> Any:
     """
     Ejecuta un flujo (callback) de pasos si la condición se cumple.
     Ideal para manejar bifurcaciones de lógica específicas de cada plataforma.
