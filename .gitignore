@@ -6,3 +6,4 @@ venv/
 .vscode
 *.pyc
 __pycache__
+Makefile
