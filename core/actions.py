@@ -73,7 +73,7 @@ def take_screenshot(
     print(f"[✓] {msg}")
 
 
-def scroll_until_visibliity(locator: tuple[str, str], description: str = None) -> None:
+def scroll_until_visibility(locator: tuple[str, str], description: str = None) -> None:
     """
     Realiza un scroll hasta que el elemento sea visible.
     """
