@@ -1,11 +1,8 @@
 import os
-from dotenv import load_dotenv
 from appium import webdriver
 from appium.webdriver.webdriver import WebDriver
 from appium.options.android import UiAutomator2Options
 from appium.options.ios import XCUITestOptions
-
-load_dotenv()
 
 
 def create_driver() -> WebDriver:
