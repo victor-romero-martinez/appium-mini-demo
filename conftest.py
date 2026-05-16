@@ -1,4 +1,8 @@
 import pytest, subprocess
+from dotenv import load_dotenv
+
+# Cargar variables de entorno al inicio de la ejecución de los tests
+load_dotenv()
 
 from core.context import context
 from core.driver_factory import create_driver
