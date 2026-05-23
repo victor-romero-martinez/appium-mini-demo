@@ -1,4 +1,4 @@
-from pages.animation_page import *
+from pages.app_page import *
 from core.actions import *
 from core.assertions import *
 from time import sleep

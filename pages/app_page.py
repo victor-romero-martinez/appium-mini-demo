@@ -1,3 +1,7 @@
+# App para hacer pruebas
+# https://play.google.com/store/apps/details?id=com.expandtesting.practice
+
+
 from appium.webdriver.common.appiumby import AppiumBy
 
 COMPANY_NAME_LABEL = (AppiumBy.ACCESSIBILITY_ID, "company-name")
