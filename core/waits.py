@@ -22,6 +22,22 @@ def wait_visible(locator: tuple[str, str], timeout: int = 10) -> WebElement:
     )
 
 
+def wait_invisible(locator: tuple[str, str], timeout: int = 10) -> bool:
+    """
+    Espera explícita hasta que un elemento sea invisible en el DOM o deje de existir.
+
+    Args:
+        locator: Tupla (By, Value).
+        timeout: Tiempo máximo de espera en segundos (por defecto 10).
+
+    Returns:
+        bool: True si el elemento desaparece antes del timeout.
+    """
+    return WebDriverWait(context.driver, timeout).until(
+        EC.invisibility_of_element_located(locator)
+    )
+
+
 def wait_for_animation_end(locator: tuple[str, str] = None, timeout: int = 5) -> None:
     """
     Espera a que las animaciones terminen.
@@ -50,14 +66,31 @@ def wait_for_animation_end(locator: tuple[str, str] = None, timeout: int = 5) ->
     else:
         # Espera global basada en settings del driver
         platform = context.platform
+        current_settings = context.driver.get_settings()
+
         if platform == "android":
-            context.driver.update_settings({"waitForIdleTimeout": 1000})
-            # Forzamos una operación ligera para que el driver aplique el wait for idle
-            _ = context.driver.current_package
+            original_idle_timeout = current_settings.get("waitForIdleTimeout", 10000)
+            try:
+                # Ajustamos al timeout solicitado (en milisegundos)
+                context.driver.update_settings({"waitForIdleTimeout": timeout * 1000})
+                # Forzamos una interacción con el árbol de UI para disparar el "wait for idle"
+                context.driver.find_elements("xpath", "/*")
+            finally:
+                # Restauramos la configuración original para no afectar el resto de las pruebas
+                context.driver.update_settings(
+                    {"waitForIdleTimeout": original_idle_timeout}
+                )
+
         elif platform == "ios":
-            context.driver.update_settings({
-                "waitForQuiescence": True,
-                "animationIdlenessTimeout": timeout
-            })
-            # Forzamos una operación ligera
-            _ = context.driver.orientation
+            original_quiescence = current_settings.get("waitForQuiescence", True)
+            try:
+                context.driver.update_settings(
+                    {"waitForQuiescence": True, "animationIdlenessTimeout": timeout}
+                )
+                # Forzamos una interacción con el árbol de UI para disparar el "wait for quiescence"
+                context.driver.find_elements("xpath", "/*")
+            finally:
+                # Restauramos la configuración original
+                context.driver.update_settings(
+                    {"waitForQuiescence": original_quiescence}
+                )
