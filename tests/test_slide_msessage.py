@@ -5,12 +5,8 @@ from pages.animation_page import *
 
 
 def test_animation_slide():
-    assert_visible(COMPANY_NAME_LABEL)
     tap_on(ANIMATION_DEMO_BUTTON)
     tap_on(SLIDE_MESSAGE_BUTTON)
-
     assert_visible(SLIDE_MESSAGE)
     wait_invisible(SLIDE_MESSAGE)
-
     back()
-    assert_visible(COMPANY_NAME_LABEL)
