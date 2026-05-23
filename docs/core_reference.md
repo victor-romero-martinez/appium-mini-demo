@@ -41,13 +41,7 @@ Manejo de tiempos y sincronización.
 
 ---
 
-## 🔄 Flujos y Utilidades (`core.flows`, `core.context`)
-
-### `run_flow`
-Permite ejecutar un bloque de código basado en una condición. Ideal para pasos específicos de una plataforma.
-```python
-run_flow(context.platform == 'android', mi_funcion_android, arg1="valor")
-```
+## 🔄 Flujos y Utilidades (`core.context`)
 
 ### `context`
 Objeto global que mantiene el estado de la ejecución.
