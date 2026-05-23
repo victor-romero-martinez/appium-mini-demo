@@ -1,5 +1,8 @@
 import re
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.actions.action_builder import ActionBuilder
+from selenium.webdriver.common.actions.pointer_input import PointerInput
+from selenium.webdriver.common.actions import interaction
 from appium.webdriver.common.appiumby import AppiumBy
 from core.action_logger import log_action
 from core.context import context
@@ -22,10 +25,14 @@ def tap_at(x: int, y: int, description: str = None) -> None:
     """
     msg = description or f"Tocando en coordenadas: ({x}, {y})"
     with log_action(msg):
-        actions = ActionChains(context.driver)
-        actions.w3c_actions.pointer_action.move_to_location(x, y)
-        actions.w3c_actions.pointer_action.pointer_down()
-        actions.w3c_actions.pointer_action.pointer_up()
+        x, y = int(x), int(y)
+        finger = PointerInput(interaction.POINTER_TOUCH, "finger")
+        actions = ActionBuilder(context.driver, mouse=finger)
+
+        finger.create_pointer_move(duration=0, x=x, y=y)
+        finger.create_pointer_down(button=0)
+        finger.create_pointer_up(button=0)
+
         actions.perform()
 
 
@@ -157,6 +164,10 @@ def swipe(
         start_x, start_y = coords[direction]["start"]
         end_x, end_y = coords[direction]["end"]
 
+        # Asegurar coordenadas enteras
+        start_x, start_y = int(start_x), int(start_y)
+        end_x, end_y = int(end_x), int(end_y)
+
         for _ in range(count):
             # Verificar si el elemento objetivo ya es visible para detenerse
             if locator:
@@ -167,13 +178,15 @@ def swipe(
                 except:
                     pass
 
-            # Ejecutar Swipe usando W3C Actions
-            actions = ActionChains(context.driver)
-            actions.w3c_actions.pointer_action.move_to_location(start_x, start_y)
-            actions.w3c_actions.pointer_action.pointer_down()
-            actions.w3c_actions.pointer_action.pause(0.6)  # Pausa para asegurar el swipe
-            actions.w3c_actions.pointer_action.move_to_location(end_x, end_y)
-            actions.w3c_actions.pointer_action.pointer_up()
+            # Ejecutar Swipe usando W3C Actions (Touch Pointer)
+            finger = PointerInput(interaction.POINTER_TOUCH, "finger")
+            actions = ActionBuilder(context.driver, mouse=finger)
+
+            finger.create_pointer_move(duration=0, x=start_x, y=start_y)
+            finger.create_pointer_down(button=0)
+            finger.create_pointer_move(duration=600, x=end_x, y=end_y)
+            finger.create_pointer_up(button=0)
+
             actions.perform()
 
 
