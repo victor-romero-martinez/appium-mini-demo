@@ -9,3 +9,4 @@ def test_scroll_by_xpath_to_country_py():
     wait_for_animation_end()
     scroll_until_visibility(PARAGUAY_LABEL_BY_XPATH)
     assert_visible(PARAGUAY_LABEL_BY_XPATH)
+    back()
