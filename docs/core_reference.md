@@ -15,8 +15,13 @@ Módulo principal para la interacción con elementos de la interfaz.
 | `get_text` | Obtiene el texto de un elemento. | `locator`, `description` |
 | `take_screenshot` | Guarda una captura de pantalla. | `filename`, `path`, `description` |
 | `scroll_until_visibliity` | Hace scroll hasta que el elemento sea visible. | `locator`, `description` |
+<<<<<<< HEAD
 | `swipe` | Desliza en una dirección (`up`, `down`, `left`, `right`). | `direction`, `count`, `stop_condition`, `container_locator` |
 | `back` | Navega hacia atrás en la aplicación. | `description` |
+=======
+| `swipe` | Desliza en una dirección (`up`, `down`, `left`, `right`). | `direction`, `count`, `stop_condition`, `container_locator` |
+| `back` | Navega hacia atrás en la aplicación. | `description` |
+>>>>>>> cec3597 (refactor: enhance tap_at and swipe flexibility)
 
 ---
 

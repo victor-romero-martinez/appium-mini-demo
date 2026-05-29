@@ -38,10 +38,14 @@ def tap_at(
     """
     msg = description or f"Tocando en coordenadas: ({x}, {y})"
     if relative_to:
+<<<<<<< HEAD
         msg = (
             description
             or f"Tocando en coordenadas: ({x}, {y}) relativas a {relative_to}"
         )
+=======
+        msg = description or f"Tocando en coordenadas: ({x}, {y}) relativas a {relative_to}"
+>>>>>>> cec3597 (refactor: enhance tap_at and swipe flexibility)
 
     with log_action(msg):
         if relative_to:
@@ -59,6 +63,7 @@ def tap_at(
                 target_y = rect["y"] + y
         else:
             # Relativo al viewport/pantalla
+<<<<<<< HEAD
             if (isinstance(x, float) and 0.0 <= x <= 1.0) or (
                 isinstance(y, float) and 0.0 <= y <= 1.0
             ):
@@ -71,6 +76,12 @@ def tap_at(
                     if isinstance(y, float) and 0.0 <= y <= 1.0
                     else y
                 )
+=======
+            if (isinstance(x, float) and 0.0 <= x <= 1.0) or (isinstance(y, float) and 0.0 <= y <= 1.0):
+                size = context.driver.get_window_size()
+                target_x = size["width"] * x if isinstance(x, float) and 0.0 <= x <= 1.0 else x
+                target_y = size["height"] * y if isinstance(y, float) and 0.0 <= y <= 1.0 else y
+>>>>>>> cec3597 (refactor: enhance tap_at and swipe flexibility)
             else:
                 target_x = x
                 target_y = y
