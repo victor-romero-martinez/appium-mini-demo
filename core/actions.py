@@ -1,4 +1,5 @@
 import re
+from typing import Callable, Union
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.actions.action_builder import ActionBuilder
 from selenium.webdriver.common.actions.pointer_input import PointerInput
@@ -19,17 +20,66 @@ def tap_on(locator: tuple[str, str], description: str = None) -> None:
         element.click()
 
 
-def tap_at(x: int, y: int, description: str = None) -> None:
+def tap_at(
+    x: Union[int, float],
+    y: Union[int, float],
+    relative_to: tuple[str, str] = None,
+    description: str = None,
+) -> None:
     """
     Realiza un toque (tap) en coordenadas específicas (x, y).
+
+    - Si relative_to no se especifica:
+        - Si x, y son enteros, se interpretan como píxeles absolutos en la pantalla.
+        - Si x, y son floats (entre 0.0 y 1.0), se interpretan como porcentajes del ancho/alto de la pantalla.
+    - Si relative_to se especifica:
+        - Si x, y son enteros, se interpretan como offsets en píxeles desde la esquina superior izquierda del elemento.
+        - Si x, y son floats (entre 0.0 y 1.0), se interpretan como fracciones del tamaño del elemento (ej. 0.5 es el centro).
     """
     msg = description or f"Tocando en coordenadas: ({x}, {y})"
+    if relative_to:
+        msg = (
+            description
+            or f"Tocando en coordenadas: ({x}, {y}) relativas a {relative_to}"
+        )
+
     with log_action(msg):
-        x, y = int(x), int(y)
+        if relative_to:
+            element = wait_visible(relative_to)
+            rect = element.rect
+            # Calcular x
+            if isinstance(x, float) and 0.0 <= x <= 1.0:
+                target_x = rect["x"] + rect["width"] * x
+            else:
+                target_x = rect["x"] + x
+            # Calcular y
+            if isinstance(y, float) and 0.0 <= y <= 1.0:
+                target_y = rect["y"] + rect["height"] * y
+            else:
+                target_y = rect["y"] + y
+        else:
+            # Relativo al viewport/pantalla
+            if (isinstance(x, float) and 0.0 <= x <= 1.0) or (
+                isinstance(y, float) and 0.0 <= y <= 1.0
+            ):
+                size = context.driver.get_window_size()
+                target_x = (
+                    size["width"] * x if isinstance(x, float) and 0.0 <= x <= 1.0 else x
+                )
+                target_y = (
+                    size["height"] * y
+                    if isinstance(y, float) and 0.0 <= y <= 1.0
+                    else y
+                )
+            else:
+                target_x = x
+                target_y = y
+
+        target_x, target_y = int(target_x), int(target_y)
         finger = PointerInput(interaction.POINTER_TOUCH, "finger")
         actions = ActionBuilder(context.driver, mouse=finger)
 
-        finger.create_pointer_move(duration=0, x=x, y=y)
+        finger.create_pointer_move(duration=0, x=target_x, y=target_y)
         finger.create_pointer_down(button=0)
         finger.create_pointer_up(button=0)
 
@@ -118,7 +168,7 @@ def scroll_until_visibility(locator: tuple[str, str], description: str = None) -
 def swipe(
     direction: str,
     count: int = 1,
-    locator: tuple[str, str] = None,
+    stop_condition: Callable[[], bool] = None,
     container_locator: tuple[str, str] = None,
     description: str = None,
 ) -> None:
@@ -169,14 +219,9 @@ def swipe(
         end_x, end_y = int(end_x), int(end_y)
 
         for _ in range(count):
-            # Verificar si el elemento objetivo ya es visible para detenerse
-            if locator:
-                try:
-                    elements = context.driver.find_elements(*locator)
-                    if elements and elements[0].is_displayed():
-                        return
-                except:
-                    pass
+            # Verificar si se cumple la condición de parada antes de cada swipe
+            if stop_condition and stop_condition():
+                return
 
             # Ejecutar Swipe usando W3C Actions (Touch Pointer)
             finger = PointerInput(interaction.POINTER_TOUCH, "finger")
