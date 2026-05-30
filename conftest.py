@@ -8,7 +8,7 @@ from core.context import context
 from core.driver_factory import create_driver
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="function", autouse=True)
 def setup_driver():
     context.driver = create_driver()
 
