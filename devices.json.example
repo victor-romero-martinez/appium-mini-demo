@@ -1,0 +1,30 @@
+{
+  "android": [
+    {
+      "deviceName": "Pixel_9a",
+      "udid": "emulator-5554",
+      "platformVersion": 16,
+      "systemPort": 8200
+    },
+    {
+      "deviceName": "moon",
+      "udid": "emulator-5556",
+      "platformVersion": 16,
+      "systemPort": 8201
+    }
+  ],
+  "ios": [
+    {
+      "deviceName": "iPhone 15 Pro",
+      "udid": "UDID-DEL-DISPOSITIVO-1",
+      "platformVersion": "25.6.2",
+      "wdaLocalPort": 8100
+    },
+    {
+      "deviceName": "iPhone 15",
+      "udid": "UDID-DEL-DISPOSITIVO-2",
+      "platformVersion": "25.6.2",
+      "wdaLocalPort": 8101
+    }
+  ]
+}
