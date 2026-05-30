@@ -1,15 +1,22 @@
-appium:
-	appium > /dev/null 2>&1 &
+SHELL := /bin/bash
 
-ios:
-	PLATFORM_NAME=ios \
+.PHONY: help ios android
+
+help: ## Mostrar este mensaje de ayuda
+	@echo "Uso: make [comando]"
+	@echo ""
+	@echo "Comandos disponibles:"
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}'
+
+ios: ## Ejecutar tests en un dispositivo iOS específico
+	@PLATFORM_NAME=ios \
 	DEVICE_NAME="NOMBRE DEL DISPOSITIVO" \
 	PLATFORM_VERSION=VERSION DEL SISTEMA OPERATIVO \
 	UDID=ID DEL DISPOSITIVO (OBTENER DESDE IOS CONFIGURATION) \
 	USE_PREBUILT_WDA=True \
 	pytest -v
 
-android:
-	DEVICE_NAME="NOMBRE DEL DISPOSITIVO" \
+android: ## Ejecutar tests en un dispositivo Android específico
+	@DEVICE_NAME="NOMBRE DEL DISPOSITIVO" \
 	PLATFORM_VERSION=VERSION DEL SISTEMA OPERATIVO \
 	pytest -v
