@@ -3,13 +3,13 @@
     {
       "deviceName": "Pixel_9a",
       "udid": "emulator-5554",
-      "platformVersion": 16,
+      "platformVersion": "16",
       "systemPort": 8200
     },
     {
       "deviceName": "moon",
-      "udid": "emulator-5556",
-      "platformVersion": 16,
+      "udid": "adb-aXaXz4ydnfbubudu-jIxt77._adb-tls-connect._tcp",
+      "platformVersion": "16",
       "systemPort": 8201
     }
   ],
