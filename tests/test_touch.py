@@ -10,4 +10,3 @@ def test_touch_at():
     tap_at(250, 800)
     sleep(2)
     tap_at(320, 1200)
-    back()
