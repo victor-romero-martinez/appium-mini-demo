@@ -34,3 +34,10 @@ def assert_disabled(locator: tuple[str, str], description: str = None) -> None:
         assert (
             not element.is_enabled()
         ), f"Error: El elemento {locator} debería estar deshabilitado pero está habilitado."
+
+
+__all__ = [
+    "assert_visible",
+    "assert_enabled",
+    "assert_disabled",
+]

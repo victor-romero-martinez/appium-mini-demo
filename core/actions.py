@@ -242,3 +242,14 @@ def back(description: str = None) -> None:
     msg = description or "Navegando hacia atrás"
     with log_action(msg):
         context.driver.back()
+
+
+__all__ = [
+    "tap_on",
+    "input_text",
+    "get_text",
+    "take_screenshot",
+    "scroll_until_visibility",
+    "swipe",
+    "back",
+]

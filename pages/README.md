@@ -8,7 +8,7 @@ En este directorio se deben incluir exclusivamente los **locators** de cada pant
 
 ## Ejemplo
 ```python
-from appium.webdriver.common.appiumby import AppiumBy
+from appium.webdriver.common.appiumby import AppiumBy as _AppiumBy
 
-START_BUTTON = (AppiumBy.ACCESSIBILITY_ID, "start_btn")
+START_BUTTON = (_AppiumBy.ACCESSIBILITY_ID, "start_btn")
 ```
